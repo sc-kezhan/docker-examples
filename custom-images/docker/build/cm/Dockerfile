@@ -3,12 +3,14 @@
 ARG BASE_IMAGE
 ARG SXA_IMAGE
 ARG SPE_IMAGE
+ARG SCCH_IMAGE
 ARG TOOLING_IMAGE
 ARG SOLUTION_IMAGE
 ARG HORIZON_RESOURCES_IMAGE
 
 FROM ${SOLUTION_IMAGE} as solution
 FROM ${TOOLING_IMAGE} as tooling
+FROM ${SCCH_IMAGE} as scch
 FROM ${SPE_IMAGE} as spe
 FROM ${SXA_IMAGE} as sxa
 FROM ${HORIZON_RESOURCES_IMAGE} as horizon_resources
@@ -21,6 +23,12 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 COPY --from=tooling \tools\ \tools\
 
 WORKDIR C:\inetpub\wwwroot
+
+# Add SCCH module
+COPY --from=scch \module\cm\content .\
+
+# Apply SCCH transformation files
+RUN C:\tools\scripts\Invoke-XdtTransform.ps1 -Path C:\inetpub\wwwroot -XdtPath \inetpub\wwwroot\App_Data\Transforms\scch\xdts
 
 # Add SPE module
 COPY --from=spe \module\cm\content .\

@@ -1,12 +1,11 @@
 [CmdletBinding()]
 Param (
-    [Parameter(Mandatory = $true)]
     [string]
     [ValidateNotNullOrEmpty()]
-    $LicenseXmlPath,
+    $LicenseXmlPath = "C:\license\license.xml",
 
     [string]
-    $HostName = "dockerexamples",
+    $HostName = "chconnect",
     
     # We do not need to use [SecureString] here since the value will be stored unencrypted in .env,
     # and used only for transient local example environment.

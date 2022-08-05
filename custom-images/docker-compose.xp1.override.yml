@@ -69,6 +69,7 @@ services:
       args:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp1-cd:${SITECORE_VERSION}
         SXA_IMAGE: ${SITECORE_MODULE_REGISTRY}sitecore-sxa-xp1-assets:${SXA_VERSION}
+        SCCH_IMAGE: ${SCCH_IMAGE}
         TOOLING_IMAGE: ${SITECORE_TOOLS_REGISTRY}sitecore-docker-tools-assets:${TOOLS_VERSION}
         SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
     depends_on:
@@ -78,6 +79,9 @@ services:
       - ${LOCAL_DATA_PATH}\cd:C:\inetpub\wwwroot\App_Data\logs
     environment:
       SITECORE_DEVELOPMENT_PATCHES: CustomErrorsOff
+      Sitecore_ConnectionStrings_DAM.ContentHub: ${DAM_ContentHub}
+      Sitecore_ConnectionStrings_DAM.SearchPage: ${DAM_SearchPage}
+      Sitecore_ConnectionStrings_DAM.ExternalRedirectKey: ${DAM_ExternalRedirectKey}
     entrypoint: powershell -Command "& C:\tools\entrypoints\iis\Development.ps1"
 
   cm:
@@ -87,6 +91,7 @@ services:
       args:
         BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp1-cm:${SITECORE_VERSION}
         SPE_IMAGE: ${SITECORE_MODULE_REGISTRY}sitecore-spe-assets:${SPE_VERSION}
+        SCCH_IMAGE: ${SCCH_IMAGE}
         SXA_IMAGE: ${SITECORE_MODULE_REGISTRY}sitecore-sxa-xp1-assets:${SXA_VERSION}
         TOOLING_IMAGE: ${SITECORE_TOOLS_REGISTRY}sitecore-docker-tools-assets:${TOOLS_VERSION}
         SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
@@ -99,6 +104,13 @@ services:
     environment:
       SITECORE_DEVELOPMENT_PATCHES: CustomErrorsOff
       Sitecore_Horizon_ClientHost: https://${HRZ_HOST}
+      Sitecore_ConnectionStrings_CMP.ContentHub: ${CMP_ContentHub}
+      Sitecore_ConnectionStrings_CMP.ServiceBusEntityPathIn: ${CMP_ServiceBusEntityPathIn}
+      Sitecore_ConnectionStrings_CMP.ServiceBusSubscription: ${CMP_ServiceBusSubscription}
+      Sitecore_ConnectionStrings_CMP.ServiceBusEntityPathOut: ${CMP_ServiceBusEntityPathOut}
+      Sitecore_ConnectionStrings_DAM.ContentHub: ${DAM_ContentHub}
+      Sitecore_ConnectionStrings_DAM.SearchPage: ${DAM_SearchPage}
+      Sitecore_ConnectionStrings_DAM.ExternalRedirectKey: ${DAM_ExternalRedirectKey}
     entrypoint: powershell -Command "& C:\tools\entrypoints\iis\Development.ps1"
 
   prc:

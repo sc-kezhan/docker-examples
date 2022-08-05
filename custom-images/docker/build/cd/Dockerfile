@@ -2,11 +2,13 @@
 
 ARG BASE_IMAGE
 ARG SXA_IMAGE
+ARG SCCH_IMAGE
 ARG TOOLING_IMAGE
 ARG SOLUTION_IMAGE
 
 FROM ${SOLUTION_IMAGE} as solution
 FROM ${TOOLING_IMAGE} as tooling
+FROM ${SCCH_IMAGE} as scch
 FROM ${SXA_IMAGE} as sxa
 FROM ${BASE_IMAGE}
 
@@ -16,6 +18,16 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 COPY --from=tooling \tools\ \tools\
 
 WORKDIR C:\inetpub\wwwroot
+
+# Add SCCH module
+COPY --from=scch \module\cm\content .\
+
+# Copy SCCH transformation files
+COPY --from=scch \module\transforms\ C:\transforms\
+
+# Apply SCCH transformation files
+RUN C:\tools\scripts\Invoke-XdtTransform.ps1 -Path C:\inetpub\wwwroot -XdtPath \inetpub\wwwroot\App_Data\Transforms\scch\xdts
+RUN C:\tools\scripts\Invoke-XdtTransform.ps1 -Path C:\inetpub\wwwroot -XdtPath \transforms\cd
 
 # Add SXA module
 COPY --from=sxa \module\cd\content .\
